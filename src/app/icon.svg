@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 72">
+  <!-- Home logo tile (felt gradient, rx 22) plus the SuitIcon spade paths. -->
+  <defs>
+    <linearGradient id="felt" x1="0" y1="0" x2="72" y2="72" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#17895F" />
+      <stop offset="1" stop-color="#0A4430" />
+    </linearGradient>
+  </defs>
+  <rect width="72" height="72" rx="22" fill="url(#felt)" />
+  <g transform="translate(17 17) scale(0.38)" fill="#ffffff">
+    <path d="M50 2C82 30 100 45 96 62C92 82 62 84 53 68L47 68C38 84 8 82 4 62C0 45 18 30 50 2Z" />
+    <path d="M50 60L66 98L34 98Z" />
+  </g>
+</svg>

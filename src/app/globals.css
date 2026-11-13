@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Colors from the Flutter app (ui/design.dart), as RGB triples so Tailwind
+ * can add opacity. The app is dark-only, like the phone app.
+ */
+:root {
+  --bg-top: 11 18 36; /* #0B1224 */
+  --bg-bottom: 6 9 20; /* #060914 */
+  --felt-center: 23 137 95; /* #17895F */
+  --felt-edge: 10 68 48; /* #0A4430 */
+  --rim: 27 35 51; /* #1B2333 */
+  --gold: 245 196 81; /* #F5C451 */
+  --gold-deep: 224 168 46; /* #E0A82E */
+  --green: 52 211 153; /* #34D399 */
+  --red: 248 113 113; /* #F87171 */
+  --all-in: 232 121 249; /* #E879F9, only for players who are all-in */
+  --text: 255 255 255;
+
+  /* One per seat. */
+  --seat-0: 99 102 241; /* #6366F1 */
+  --seat-1: 236 72 153; /* #EC4899 */
+  --seat-2: 20 184 166; /* #14B8A6 */
+  --seat-3: 245 158 11; /* #F59E0B */
+  --seat-4: 139 92 246; /* #8B5CF6 */
+  --seat-5: 59 130 246; /* #3B82F6 */
+  --seat-6: 239 68 68; /* #EF4444 */
+  --seat-7: 34 197 94; /* #22C55E */
+
+  color-scheme: dark;
+}
+
+html,
+body {
+  min-height: 100%;
+  overflow-x: clip;
+  background: rgb(var(--bg-bottom));
+  color: rgb(var(--text));
+}
+
+body {
+  background-image: linear-gradient(
+    to bottom,
+    rgb(var(--bg-top)),
+    rgb(var(--bg-bottom))
+  );
+  background-attachment: fixed;
+  -webkit-tap-highlight-color: transparent;
+  /* Keep pinch-zoom; skip the double-tap zoom that jumps the table. */
+  touch-action: manipulation;
+}
+
+@layer utilities {
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Phone notches and home bars. */
+  .safe-bottom {
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
+
+  .safe-top {
+    padding-top: max(12px, env(safe-area-inset-top));
+  }
+}
