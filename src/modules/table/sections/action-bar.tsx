@@ -18,6 +18,8 @@ type ActionBarProps = {
   legal: Legal;
   hand: Hand;
   you: HandSeat;
+  /** No poker action is available until the dealer has delivered every card. */
+  disabled?: boolean;
   onAct: (type: ActionMessage["type"], amount?: number) => void;
 };
 
@@ -25,7 +27,13 @@ type ActionBarProps = {
  * Fold / Check-Match / Bet-Raise for the player to act (Flutter `ActionBar`).
  * Remount it (key) when the street or the minimum raise changes.
  */
-export const ActionBar = ({ legal, hand, you, onAct }: ActionBarProps) => {
+export const ActionBar = ({
+  legal,
+  hand,
+  you,
+  disabled = false,
+  onAct,
+}: ActionBarProps) => {
   const [raising, setRaising] = useState(false);
   const ctx: RaiseContext = { legal, hand, you };
   const b = mainButtons(ctx);
@@ -48,17 +56,29 @@ export const ActionBar = ({ legal, hand, you, onAct }: ActionBarProps) => {
   }
 
   const raise = (
-    <GoldButton className="min-w-0 flex-1" onClick={openRaise}>
+    <GoldButton className="min-w-0 flex-1" disabled={disabled} onClick={openRaise}>
       {b.raiseLabel}
     </GoldButton>
   );
   return (
     <div className="flex flex-col gap-2.5">
+      {disabled && (
+        <p role="status" className="text-center text-xs font-medium text-dim">
+          Dealing cards to every player…
+        </p>
+      )}
       <div className="flex gap-2.5">
-        <ActionButton tone="red" outlined onClick={() => onAct("fold")}>
+        <ActionButton
+          tone="red"
+          outlined
+          disabled={disabled}
+          onClick={() => onAct("fold")}>
           Fold
         </ActionButton>
-        <ActionButton tone="white" onClick={() => onAct(b.matchType)}>
+        <ActionButton
+          tone="white"
+          disabled={disabled}
+          onClick={() => onAct(b.matchType)}>
           {b.matchLabel}
         </ActionButton>
         {legal.canRaise && !b.showAllIn && raise}
@@ -69,6 +89,7 @@ export const ActionBar = ({ legal, hand, you, onAct }: ActionBarProps) => {
           <ActionButton
             tone="gold"
             outlined
+            disabled={disabled}
             onClick={() => send(you.stack + you.streetBet)}>
             {b.allInLabel}
           </ActionButton>

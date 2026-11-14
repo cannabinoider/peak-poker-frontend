@@ -1,4 +1,5 @@
 import { Pill } from "@/lib/components/pill";
+import { DealerSwitch } from "@/modules/table/components/dealer-choice";
 import { IconButton } from "@/modules/table/components/icon-button";
 import { Icon } from "@/modules/table/components/icons";
 import { BETTING_LABELS } from "@/modules/table/constants";
@@ -42,6 +43,9 @@ export const TopBar = ({ room, onRules, onLedger, onMenu }: TopBarProps) => {
         <IconButton icon="info" label="How to play" onClick={onRules} />
         <IconButton icon="receipt" label="Ledger" onClick={onLedger} />
         <IconButton icon="more" label="Table menu" onClick={onMenu} />
+      </div>
+      <div className="mt-1 flex">
+        <DealerSwitch />
       </div>
       {status && (
         <div className="mt-1 flex flex-wrap items-center gap-1.5" role="status">

@@ -24,6 +24,78 @@ export interface OvalLayout {
   maxSeats: number;
 }
 
+/** Her drawn size at full scale. Shrunk only when the felt has no room. */
+export const DEALER_BOX = { w: 104, h: 156 };
+
+export type DealerSpot = Point & { w: number; h: number };
+
+const boxesOverlap = (
+  ax: number,
+  ay: number,
+  aw: number,
+  ah: number,
+  bx: number,
+  by: number,
+  bw: number,
+  bh: number,
+  pad: number,
+) => {
+  const gapX = Math.abs(ax - bx) - aw / 2 - bw / 2;
+  const gapY = Math.abs(ay - by) - ah / 2 - bh / 2;
+  return gapX <= pad && gapY <= pad;
+};
+
+/**
+ * Where she stands: on the felt, beside the cards, on a spot that does not
+ * cover a player's seat. `avoid` is the board and pot, which she stands clear of
+ * when there is room.
+ */
+export const dealerAnchor = (
+  l: OvalLayout,
+  avoid?: { x: number; y: number; w: number; h: number },
+): DealerSpot => {
+  const cx = l.width / 2;
+  const cy = l.height / 2;
+  const prefer = { x: cx - Math.min(72, l.width * 0.16), y: cy };
+  const search = (respectBoard: boolean): DealerSpot | null => {
+    let best: (DealerSpot & { score: number }) | null = null;
+    for (const scale of [1, 0.85, 0.7, 0.55, 0.4, 0.3]) {
+      const w = Math.round(DEALER_BOX.w * scale);
+      const h = Math.round(DEALER_BOX.h * scale);
+      const rx = Math.max(20, l.width / 2 - l.tileW * 0.34 - w / 2);
+      const ry = Math.max(20, l.height / 2 - l.tileH * 0.4 - h / 2);
+      for (let y = h / 2; y <= l.height - h / 2; y += 8) {
+        for (let x = w / 2; x <= l.width - w / 2; x += 8) {
+          const nx = (x - cx) / rx;
+          const ny = (y - cy) / ry;
+          const onFelt = nx * nx + ny * ny <= 1;
+          const hitsSeat = l.seats.some((seat) => {
+            const p = seatPosition(l, seat);
+            return boxesOverlap(x, y, w, h, p.x, p.y, l.tileW, l.tileH, 6);
+          });
+          if (hitsSeat) {
+            continue;
+          }
+          const hitsBoard =
+            respectBoard &&
+            avoid !== undefined &&
+            boxesOverlap(x, y, w, h, avoid.x, avoid.y, avoid.w, avoid.h, 2);
+          if (hitsBoard) {
+            continue;
+          }
+          const score =
+            scale * 1000 + (onFelt ? 400 : 0) - Math.hypot(x - prefer.x, y - prefer.y);
+          if (!best || score > best.score) {
+            best = { x, y, w, h, score };
+          }
+        }
+      }
+    }
+    return best;
+  };
+  return search(true) ?? search(false) ?? { x: cx, y: cy, w: 72, h: 108 };
+};
+
 export const seatPosition = (l: OvalLayout, seat: number): Point => {
   const cx = l.width / 2;
   const cy = l.height / 2;

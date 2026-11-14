@@ -1,0 +1,466 @@
+.figure {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 6px 10px rgb(0 0 0 / 0.5));
+}
+
+.body,
+.head,
+.eyes,
+.dealArm,
+.restArm,
+.fan,
+.bust,
+.kiss,
+.ninaHair,
+.shuffleHands,
+.shuffleDeck {
+  transform-box: fill-box;
+}
+
+/* Idle: she breathes, her head drifts a little, and she blinks. */
+.body {
+  transform-origin: 50% 100%;
+  animation: breathe 4.2s ease-in-out infinite;
+}
+
+.head {
+  transform-origin: 50% 95%;
+  animation: drift 6s ease-in-out infinite;
+}
+
+.eyes {
+  transform-origin: 50% 50%;
+  animation: blink 5.2s infinite;
+}
+
+.pupils {
+  transition: transform 300ms ease-out;
+}
+
+.dealArm {
+  transform-origin: 80% 10%;
+}
+
+.restArm {
+  transform-origin: 30% 10%;
+}
+
+.bust {
+  transform-origin: 50% 100%;
+}
+
+.nina {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.ninaImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center top;
+  user-select: none;
+  transform-origin: 50% 82%;
+  animation: ninaIdle 4.2s ease-in-out infinite;
+}
+
+.ninaBlink {
+  position: absolute;
+  top: 19%;
+  left: 43%;
+  width: 18%;
+  height: 2px;
+  border-radius: 999px;
+  background: #f1b99c;
+  box-shadow: 0 1px 0 #24191b;
+  opacity: 0;
+  animation: ninaBlink 5.2s infinite;
+}
+
+.ninaRiffle {
+  position: absolute;
+  top: 61%;
+  left: 65%;
+  width: 20%;
+  height: 12%;
+}
+
+.ninaRiffle i {
+  position: absolute;
+  inset: 0;
+  display: block;
+  border: 1px solid #c4b5fd;
+  border-radius: 2px;
+  background: #4c3d91;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.45);
+}
+
+.ninaRiffle i:nth-child(1) {
+  animation: ninaRiffleLeft 0.55s ease-in-out infinite alternate;
+}
+
+.ninaRiffle i:nth-child(2) {
+  animation: ninaRiffleRight 0.55s ease-in-out infinite alternate;
+}
+
+.ninaRiffle i:nth-child(3) {
+  transform: translate(0, -2px) rotate(5deg);
+}
+
+.ninaHair {
+  transform-origin: 50% 10%;
+  animation: ninaHairSway 4.8s ease-in-out infinite alternate;
+}
+
+.shuffleHands {
+  opacity: 0;
+  transform-origin: 50% 80%;
+}
+
+.nina.shuffling .shuffleHands {
+  opacity: 1;
+  animation: ninaHandsShuffle 0.55s ease-in-out infinite alternate;
+}
+
+.nina.shuffling .shuffleDeck {
+  animation: ninaDeckRiffle 0.28s ease-in-out infinite alternate;
+}
+
+.wink,
+.grin,
+.fan,
+.kiss,
+.kissMouth {
+  opacity: 0;
+}
+
+.smile {
+  transition: opacity 200ms;
+}
+
+/* Your turn: she glances down at you. */
+.glance .pupils {
+  transform: translate(-1px, 2px);
+}
+
+/* Shuffle: hands work the deck, and her chest follows the motion. */
+.shuffling .dealArm {
+  animation: riffle 0.55s ease-in-out infinite alternate;
+}
+
+.shuffling .restArm {
+  animation: riffle 0.55s ease-in-out infinite alternate-reverse;
+}
+
+.shuffling .fan {
+  opacity: 1;
+  animation: fan 0.55s ease-in-out infinite alternate;
+}
+
+.shuffling .bust {
+  animation: juggle 0.55s ease-in-out infinite;
+}
+
+.nina.shuffling .ninaImage {
+  animation: ninaShuffle 0.55s ease-in-out infinite alternate;
+}
+
+/* Deal: one flick of the wrist per card, toward the table. */
+.dealing .dealArm {
+  animation: flick 0.56s ease-in-out var(--throws, 1);
+}
+
+.nina.dealing .ninaImage {
+  animation: ninaDeal 0.56s ease-in-out var(--throws, 1);
+}
+
+.dealing .head {
+  animation: follow 0.3s ease-in-out var(--throws, 1);
+}
+
+/* Showdown: a wink and a big smile. */
+.cheer .openRight {
+  opacity: 0;
+}
+
+.cheer .wink,
+.cheer .grin {
+  opacity: 1;
+}
+
+.cheer .smile {
+  opacity: 0;
+}
+
+.cheer .head {
+  animation: tilt 1.2s ease-in-out infinite alternate;
+}
+
+/* Nina blows a kiss at showdown. Naomi still winks. */
+.nina.cheer .openRight {
+  opacity: 1;
+}
+
+.nina.cheer .wink,
+.nina.cheer .grin {
+  opacity: 0;
+}
+
+.nina.cheer .kissMouth {
+  opacity: 1;
+}
+
+.nina.cheer .kiss {
+  opacity: 1;
+  transform-origin: center;
+  animation: flyKiss 1.5s ease-out infinite;
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    transform: translateY(0) scaleY(1);
+  }
+  50% {
+    transform: translateY(-1px) scaleY(1.008);
+  }
+}
+
+@keyframes drift {
+  0%,
+  100% {
+    transform: rotate(-1.5deg);
+  }
+  50% {
+    transform: rotate(1.5deg);
+  }
+}
+
+@keyframes blink {
+  0%,
+  92%,
+  100% {
+    transform: scaleY(1);
+  }
+  95% {
+    transform: scaleY(0.1);
+  }
+}
+
+@keyframes riffle {
+  from {
+    transform: translateY(0) rotate(0deg);
+  }
+  to {
+    transform: translateY(-4px) rotate(-6deg);
+  }
+}
+
+@keyframes juggle {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-2px);
+  }
+  70% {
+    transform: translateY(1px);
+  }
+}
+
+@keyframes ninaShuffle {
+  from {
+    transform: translateY(0) rotate(-0.6deg);
+  }
+  to {
+    transform: translateY(-3px) rotate(0.8deg);
+  }
+}
+
+@keyframes ninaIdle {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-1px) scale(1.006);
+  }
+}
+
+@keyframes ninaHairSway {
+  from {
+    transform: rotate(-1deg) translateX(-1px);
+  }
+  to {
+    transform: rotate(1deg) translateX(1px);
+  }
+}
+
+@keyframes ninaEyesOpen {
+  0%,
+  91%,
+  96%,
+  100% {
+    opacity: 1;
+  }
+  93%,
+  95% {
+    opacity: 0;
+  }
+}
+
+@keyframes ninaEyesClosed {
+  0%,
+  91%,
+  96%,
+  100% {
+    opacity: 0;
+  }
+  93%,
+  95% {
+    opacity: 1;
+  }
+}
+
+@keyframes ninaHandsShuffle {
+  from {
+    transform: translateY(1px) rotate(-1deg);
+  }
+  to {
+    transform: translateY(-3px) rotate(1deg);
+  }
+}
+
+@keyframes ninaDeckRiffle {
+  from {
+    transform: translateX(-3px) rotate(-5deg);
+  }
+  to {
+    transform: translateX(3px) rotate(5deg);
+  }
+}
+
+@keyframes ninaBlink {
+  0%,
+  91%,
+  96%,
+  100% {
+    opacity: 0;
+  }
+  93%,
+  95% {
+    opacity: 1;
+  }
+}
+
+@keyframes ninaRiffleLeft {
+  from {
+    transform: translate(-3px, 1px) rotate(-12deg);
+  }
+  to {
+    transform: translate(1px, -3px) rotate(-2deg);
+  }
+}
+
+@keyframes ninaRiffleRight {
+  from {
+    transform: translate(3px, 1px) rotate(12deg);
+  }
+  to {
+    transform: translate(-1px, -3px) rotate(2deg);
+  }
+}
+
+@keyframes ninaDeal {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  48% {
+    transform: translate(-3px, -2px) rotate(-1.2deg);
+  }
+}
+
+@keyframes fan {
+  from {
+    transform: translate(-2px, 2px) rotate(-6deg);
+  }
+  to {
+    transform: translate(3px, -2px) rotate(8deg);
+  }
+}
+
+@keyframes flick {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  40% {
+    transform: rotate(-10deg) translate(2px, -6px);
+  }
+  60% {
+    transform: rotate(22deg) translate(-6px, 4px);
+  }
+}
+
+@keyframes follow {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  55% {
+    transform: rotate(-4deg);
+  }
+}
+
+@keyframes tilt {
+  from {
+    transform: rotate(-3deg);
+  }
+  to {
+    transform: rotate(4deg);
+  }
+}
+
+@keyframes flyKiss {
+  0% {
+    transform: translate(0, 0) scale(0.45);
+    opacity: 0;
+  }
+  18% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-30px, 18px) scale(1.15);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .body,
+  .head,
+  .eyes,
+  .shuffling .dealArm,
+  .shuffling .restArm,
+  .shuffling .fan,
+  .shuffling .bust,
+  .nina.shuffling .ninaImage,
+  .ninaHair,
+  .nina.shuffling .shuffleHands,
+  .nina.shuffling .shuffleDeck,
+  .ninaImage,
+  .ninaBlink,
+  .ninaRiffle i,
+  .dealing .dealArm,
+  .dealing .head,
+  .nina.dealing .ninaImage,
+  .cheer .head,
+  .nina.cheer .kiss {
+    animation: none;
+  }
+}

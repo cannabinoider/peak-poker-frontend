@@ -9,7 +9,8 @@
  * Every message is a JSON object with a `t` (type) field.
  *
  * Client → server:
- *   join          {room, secret?, name?, token?, ownerToken?}  first message on every connection
+ *   join          {room, secret?, name?, token?, ownerToken?, seat?}  first message on every connection
+ *   moveSeat      {to, seat?}                     before the start: move to a seat (banker: anyone, swapping)
  *   action        {type, amount?, card?, split?}  betting / discard / split
  *   start         {}                              banker: start dealing
  *   choose        {game, betting, special?, specialStreet?, discard?}  dealer's choice
@@ -79,6 +80,8 @@ export const JoinMessageSchema = z.object({
   token: z.string().max(64).optional(),
   /** The creator's one-time owner token from `POST /rooms`: makes this player the owner. */
   ownerToken: z.string().max(64).optional(),
+  /** The empty seat a new player picked; the first free seat when left out. */
+  seat: Seat.optional(),
 });
 
 export const ActionMessageSchema = z.object({
@@ -146,6 +149,17 @@ export const PauseMessageSchema = z.object({
 /** Banker: skip the wait and deal the next hand now. */
 export const DealNowMessageSchema = z.object({ t: z.literal("dealNow") });
 
+/**
+ * Before the game starts only: move to seat `to`. A player moves themself to
+ * an empty seat; the owner or banker can move anyone (`seat`), swapping the
+ * two players when `to` is taken. Seats are fixed once the game starts.
+ */
+export const MoveSeatMessageSchema = z.object({
+  t: z.literal("moveSeat"),
+  to: Seat,
+  seat: Seat.optional(),
+});
+
 export const SitOutMessageSchema = z.object({
   t: z.literal("sitOut"),
   value: z.boolean(),
@@ -169,6 +183,7 @@ export const ClientMessageSchema = z.discriminatedUnion("t", [
   MoreTimeMessageSchema,
   SitOutMessageSchema,
   DealNowMessageSchema,
+  MoveSeatMessageSchema,
 ]);
 
 export type ClientMessage = z.infer<typeof ClientMessageSchema>;

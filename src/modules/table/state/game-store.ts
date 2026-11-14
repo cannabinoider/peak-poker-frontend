@@ -30,6 +30,8 @@ interface JoinRequest {
   name?: string;
   secret?: string | null;
   token?: string | null;
+  /** A new player's chosen empty seat (else the first free one). */
+  seat?: number | null;
 }
 
 interface GameStore {
@@ -58,6 +60,11 @@ interface GameStore {
   choose: (choice: Omit<ChooseMessage, "t">) => void;
   startGame: () => void;
   makeBanker: (seat: number) => void;
+  /**
+   * Before the start: move to seat `to`. The owner or banker can move another
+   * player (`seat`), swapping when `to` is taken.
+   */
+  moveSeat: (to: number, seat?: number) => void;
   /** Ask the server to replace an unresponsive banker. The server picks who. */
   relieveBanker: () => void;
   rebuy: () => void;
@@ -105,7 +112,7 @@ export const useGameStore = create<GameStore>()((set, get) => {
     toast: null,
     closedReason: null,
 
-    join: ({ code, name, secret, token }) => {
+    join: ({ code, name, secret, token, seat }) => {
       socket?.stop();
       const upper = code.trim().toUpperCase();
       let sessionToken = token ?? null;
@@ -128,6 +135,7 @@ export const useGameStore = create<GameStore>()((set, get) => {
             : {
                 name: joinedName,
                 ...(secret ? { secret } : {}),
+                ...(seat != null ? { seat } : {}),
                 ...ownerTokenField(upper),
               }),
         }),
@@ -158,9 +166,16 @@ export const useGameStore = create<GameStore>()((set, get) => {
               set({ me: m, joinError: null });
               break;
             }
-            case "state":
-              set({ room: m });
+            case "state": {
+              // Seats can be moved before the start: keep `me` in step.
+              const me = get().me;
+              if (me && m.yourSeat !== null && m.yourSeat !== me.seat) {
+                set({ room: m, me: { ...me, seat: m.yourSeat } });
+              } else {
+                set({ room: m });
+              }
               break;
+            }
             case "error":
               if (get().me === null) {
                 // Joining failed: a stale token means "join again as new".
@@ -210,6 +225,8 @@ export const useGameStore = create<GameStore>()((set, get) => {
     choose: (choice) => send({ t: "choose", ...choice }),
     startGame: () => send({ t: "start" }),
     makeBanker: (seat) => send({ t: "banker", seat }),
+    moveSeat: (to, seat) =>
+      send({ t: "moveSeat", to, ...(seat !== undefined ? { seat } : {}) }),
     relieveBanker: () => send({ t: "relieveBanker" }),
     rebuy: () => send({ t: "rebuy" }),
     decideRebuy: (seat, approve) => send({ t: "rebuyDecision", seat, approve }),

@@ -3,6 +3,7 @@ import { CardFan } from "@/lib/components/card-fan";
 import { BetChip } from "@/lib/components/chip";
 import { fmt } from "@/lib/utils/format";
 import { cn } from "@/lib/utils/styles";
+import { useLandedCount } from "@/modules/table/state/deal-store";
 import type { Room, Seat } from "@/modules/table/types";
 import { markFor } from "@/modules/table/utils/marks";
 import {
@@ -53,16 +54,18 @@ export const SeatTile = ({ room, seat, width, betSide }: SeatTileProps) => {
     hs?.lastAction && seat.connected && !choosing && hand?.result === undefined;
   const bet = hand?.result === undefined ? (hs?.streetBet ?? 0) : 0;
   const allIn = (hs?.allIn ?? false) && !folded;
+  // While she deals, show only the cards that have reached this seat.
+  const landed = useLandedCount(seat.seat, hs?.holeCount ?? 0);
 
   return (
     <div
       className="flex flex-col items-center transition-opacity duration-[250ms]"
       style={{ width, opacity: folded || !seat.connected ? 0.45 : 1 }}>
       <div className="flex h-[30px] items-end justify-center">
-        {inHand && !folded && !isYou && hand && (
+        {inHand && !folded && !isYou && hand && landed > 0 && (
           <CardFan
-            cards={hs.hole}
-            count={hs.holeCount}
+            cards={hs.hole?.slice(0, landed) ?? null}
+            count={landed}
             width={hs.holeCount > 2 ? 17 : 21}
             overlap={hs.holeCount > 2 ? 0.55 : 0.35}
             markOf={(c) => markFor(hand, c)}

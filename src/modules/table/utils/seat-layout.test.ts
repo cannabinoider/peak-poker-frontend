@@ -5,6 +5,7 @@ import {
   boardCardWidth,
   centerShift,
   centerWidth,
+  dealerAnchor,
   seatPosition,
   tableScale,
 } from "./seat-layout.ts";
@@ -18,6 +19,28 @@ const layout = {
   seats: [0, 1, 2, 3],
   maxSeats: 4,
 };
+
+it("the dealer stands on the felt and clear of every seat", () => {
+  const rings = [
+    [0, 1, 2, 3],
+    [0, 2],
+    [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  ];
+  for (const seats of rings) {
+    const l = { ...layout, you: seats[0], seats, maxSeats: Math.max(6, seats.length) };
+    const at = dealerAnchor(l, { x: 200, y: 300, w: 160, h: 90 });
+    assert.ok(at.w >= 30 && at.h >= 46);
+    for (const seat of l.seats) {
+      const p = seatPosition(l, seat);
+      const gapX = Math.abs(p.x - at.x) - l.tileW / 2 - at.w / 2;
+      const gapY = Math.abs(p.y - at.y) - l.tileH / 2 - at.h / 2;
+      assert.ok(gapX > 6 || gapY > 6, `dealer covers seat ${seat} of ${seats.length}`);
+    }
+    const boardGapX = Math.abs(200 - at.x) - 80 - at.w / 2;
+    const boardGapY = Math.abs(300 - at.y) - 45 - at.h / 2;
+    assert.ok(boardGapX > 2 || boardGapY > 2, "dealer covers the board");
+  }
+});
 
 it("puts you at the bottom and the others clockwise", () => {
   const you = seatPosition(layout, 2);

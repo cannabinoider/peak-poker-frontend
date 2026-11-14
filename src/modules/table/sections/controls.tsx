@@ -8,6 +8,7 @@ import { Hint } from "@/modules/table/components/hint";
 import { Icon } from "@/modules/table/components/icons";
 import { RelieveBankerButton } from "@/modules/table/components/relieve-banker";
 import { SplitPicker } from "@/modules/table/components/split-picker";
+import { useDealStore } from "@/modules/table/state/deal-store";
 import { useGameStore } from "@/modules/table/state/game-store";
 import type { Room } from "@/modules/table/types";
 import { markFor } from "@/modules/table/utils/marks";
@@ -42,6 +43,7 @@ export const Controls = ({
   const rebuy = useGameStore((s) => s.rebuy);
   const setSittingOut = useGameStore((s) => s.setSittingOut);
   const dealNow = useGameStore((s) => s.dealNow);
+  const cardsAreDealing = useDealStore((s) => s.landed !== null);
 
   const you = room.yourSeat;
   const hand = room.hand;
@@ -150,6 +152,7 @@ export const Controls = ({
         legal={hand.legal}
         hand={hand}
         you={mine}
+        disabled={cardsAreDealing}
         onAct={act}
       />
     );

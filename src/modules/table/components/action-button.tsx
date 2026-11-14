@@ -37,6 +37,7 @@ export const ActionButton = ({
     className={cn(
       "tabular flex h-[52px] min-w-0 flex-1 items-center justify-center rounded-2xl border px-2 text-base font-extrabold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-white/60 active:brightness-90",
       tones[tone][outlined ? "outlined" : "tinted"],
+      "disabled:cursor-not-allowed disabled:border-white/[0.12] disabled:text-white/[0.38] disabled:opacity-60 disabled:hover:bg-transparent disabled:active:brightness-100",
       className,
     )}
     {...props}>

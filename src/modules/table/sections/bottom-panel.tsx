@@ -14,6 +14,7 @@ import { TurnBar } from "@/modules/table/components/turn-bar";
 import { WIDE_QUERY } from "@/modules/table/constants";
 import { useMediaQuery } from "@/modules/table/hooks/use-media-query";
 import { useShowingMyCards } from "@/modules/table/state/card-privacy-store";
+import { useLandedCount } from "@/modules/table/state/deal-store";
 import { useGameStore } from "@/modules/table/state/game-store";
 import type { Room } from "@/modules/table/types";
 import { markFor } from "@/modules/table/utils/marks";
@@ -58,7 +59,9 @@ export const BottomPanel = ({
   const seat = you === null ? undefined : seatOf(room, you);
   const stack = mine?.stack ?? seat?.stack ?? 0;
   const folded = mine?.folded ?? false;
-  const hole = mine?.hole ?? null;
+  // While she deals, your cards appear one by one as they reach you.
+  const landed = useLandedCount(you, mine?.hole?.length ?? 0);
+  const hole = mine?.hole ? mine.hole.slice(0, landed) : null;
   const complete = isComplete(hand);
   const showdown = hand?.result !== undefined;
 
@@ -84,7 +87,7 @@ export const BottomPanel = ({
       className="safe-bottom relative flex w-full min-w-0 flex-col overflow-hidden rounded-t-3xl border-t border-glass bg-[#0B1224]/80 px-4 pt-3.5 backdrop-blur max-lg:min-h-0 max-lg:shrink lg:overflow-visible lg:px-8 lg:pt-5">
       <div className="mx-auto flex w-full min-w-0 max-w-xl flex-col gap-2.5 max-lg:min-h-0 max-lg:flex-1 max-lg:overflow-hidden lg:grid lg:max-w-6xl lg:grid-cols-[minmax(0,1fr)_minmax(0,520px)] lg:items-center lg:gap-x-10 lg:pb-3">
         <div className="flex shrink-0 items-center gap-3.5 overflow-x-auto lg:gap-5">
-          {hole && hand && !picking ? (
+          {hole && hole.length > 0 && hand && !picking ? (
             <PrivateCards
               handKey={`${room.code}/${hand.handNumber}`}
               forceShow={showdown}

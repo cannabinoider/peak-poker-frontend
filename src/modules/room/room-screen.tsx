@@ -5,10 +5,12 @@ import { useEffect, useState } from "react";
 import { Spinner } from "@/lib/components/button";
 import { SettlementView } from "@/modules/ledger";
 import { Lobby } from "@/modules/lobby";
+import { getRoomSummary } from "@/modules/room/api/client-actions";
 import { ConnectionBanner } from "@/modules/room/components/connection-banner";
 import { JoinForm } from "@/modules/room/components/join-form";
 import { RoomClosed } from "@/modules/room/components/room-closed";
 import { Toast } from "@/modules/room/components/toast";
+import type { RoomSummary } from "@/modules/room/types";
 import {
   getLastName,
   getRoomSession,
@@ -35,6 +37,21 @@ export const RoomScreen = ({ code }: { code: string }) => {
   // Mounted here, not in the table, so the lobby taps unlock sound and the
   // first change after "Start game" is heard.
   const win = useTableEffects();
+  // Free seats for the join form; refreshed when a join fails (seat taken).
+  const [summary, setSummary] = useState<RoomSummary | null>(null);
+  const needsForm = boot !== null && !me && !closedReason;
+  useEffect(() => {
+    if (!needsForm) {
+      return;
+    }
+    let live = true;
+    getRoomSummary(upper)
+      .then((s) => live && setSummary(s))
+      .catch(() => live && setSummary(null));
+    return () => {
+      live = false;
+    };
+  }, [needsForm, upper, joinError]);
 
   // Browser-only bits: the invite secret in the URL hash and this device's saved seat.
   useEffect(() => {
@@ -68,7 +85,8 @@ export const RoomScreen = ({ code }: { code: string }) => {
         hasInvite={secret !== null}
         error={joinError}
         busy={joining}
-        onJoin={(name) => join({ code: upper, name, secret })}
+        summary={summary}
+        onJoin={(name, seat) => join({ code: upper, name, secret, seat })}
       />
     );
   }

@@ -6,6 +6,10 @@ import { GoldButton } from "@/lib/components/button";
 import { Glass } from "@/lib/components/glass";
 import { TextField } from "@/lib/components/text-field";
 
+import type { RoomSummary } from "../types";
+
+import { SeatPicker } from "./seat-picker";
+
 export interface JoinFormProps {
   code: string;
   initialName: string;
@@ -13,24 +17,30 @@ export interface JoinFormProps {
   hasInvite: boolean;
   error: string | null;
   busy: boolean;
-  onJoin: (name: string) => void;
+  /** Free seats to pick from (null while loading or if unavailable). */
+  summary: RoomSummary | null;
+  onJoin: (name: string, seat: number | null) => void;
 }
 
-/** Pick a name and take a seat. */
+/** Pick a name, and a seat if you like, and sit down. */
 export const JoinForm = ({
   code,
   initialName,
   hasInvite,
   error,
   busy,
+  summary,
   onJoin,
 }: JoinFormProps) => {
   const [name, setName] = useState(initialName);
+  const [seat, setSeat] = useState<number | null>(null);
   const trimmed = name.trim();
+  // A seat someone else took meanwhile falls back to "any free seat".
+  const pick = seat !== null && summary?.freeSeats.includes(seat) ? seat : null;
   const submit = (e: FormEvent) => {
     e.preventDefault();
     if (trimmed.length > 0) {
-      onJoin(trimmed);
+      onJoin(trimmed, pick);
     }
   };
   return (
@@ -58,6 +68,14 @@ export const JoinForm = ({
             onChange={(e) => setName(e.target.value)}
             error={error ?? undefined}
           />
+          {hasInvite && summary && summary.freeSeats.length > 0 && (
+            <SeatPicker
+              maxSeats={summary.maxSeats}
+              freeSeats={summary.freeSeats}
+              value={pick}
+              onChange={setSeat}
+            />
+          )}
           <GoldButton type="submit" loading={busy} disabled={trimmed.length === 0}>
             Take a seat
           </GoldButton>

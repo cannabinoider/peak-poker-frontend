@@ -5,6 +5,7 @@ import type { StateMessage, WelcomeMessage } from "@/modules/table/api/contracts
 
 import { LobbyHeader } from "./sections/lobby-header";
 import { PlayersSection } from "./sections/players-section";
+import { SeatsSection } from "./sections/seats-section";
 import { SetupSection } from "./sections/setup-section";
 import { ShareSection } from "./sections/share-section";
 import { StartSection } from "./sections/start-section";
@@ -16,7 +17,8 @@ export interface LobbyProps {
 
 /**
  * Before the game starts, for everyone in the room: the room code and invite
- * (QR, copy, share), who is seated (banker badge, make banker), the table
+ * (QR, copy, share), who is seated (banker badge, make banker), the seating
+ * (pick or move seats), the table
  * setup, and Start game for the banker. Wide screens put the invite on the
  * left and the players and setup on the right.
  */
@@ -29,6 +31,7 @@ export const Lobby = ({ room, me }: LobbyProps) => (
       </div>
       <div>
         <PlayersSection room={room} me={me} />
+        <SeatsSection room={room} me={me} />
         <RebuyRequests room={room} className="pt-3" />
         <SetupSection setup={room.setup} />
         <div className="pt-6">

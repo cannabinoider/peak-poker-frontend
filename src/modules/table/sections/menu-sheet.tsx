@@ -5,6 +5,7 @@ import { useState } from "react";
 import { TextButton } from "@/lib/components/button";
 import { Sheet } from "@/lib/components/sheet";
 import { SwitchTile } from "@/lib/components/switch-tile";
+import { DealerChoice } from "@/modules/table/components/dealer-choice";
 import { MenuRow } from "@/modules/table/components/menu-row";
 import { RelieveBankerButton } from "@/modules/table/components/relieve-banker";
 import { useCardPrivacy } from "@/modules/table/state/card-privacy-store";
@@ -124,6 +125,7 @@ export const MenuSheet = ({
         title="Sounds"
         subtitle="Chips, checks and the winner's animal"
       />
+      <DealerChoice />
       {seat && !room.settlement && (
         <MenuRow
           icon={seat.sittingOut ? "login" : "seat"}

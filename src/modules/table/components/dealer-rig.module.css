@@ -1,0 +1,313 @@
+/*
+ * The dealers' rig (Nina and Naomi). Each arm turns at the shoulder and elbow; every joint group
+ * rotates about its own origin (the joint), which nina-rigged-figure.tsx puts
+ * there (nina-rigged-figure.tsx, naomi-figure.tsx). Both arms are posed as her left arm (the right one is drawn
+ * mirrored), so a negative angle always swings the forearm in toward her body.
+ *
+ * Poses are custom properties set per mode on the figure, applied with the
+ * individual `rotate`, `scale` and `translate` properties, so the small
+ * repeating motions (on `transform`) play on top of them.
+ *
+ * A forearm reaching toward the table looks shorter: `--*-reach` scales it
+ * along the bone, and the hand slides up the bone by the length it lost
+ * (`--fore-length` comes from the component).
+ */
+
+/* Idle: both hands come down in front of her and hold the fan of cards. */
+.ninaPose {
+  --free-shoulder: 6deg;
+  --free-elbow: -52deg;
+  --free-reach: 0.75;
+  --deck-shoulder: 6deg;
+  --deck-elbow: -52deg;
+  --deck-reach: 0.75;
+}
+
+/* Naomi's forearms start at her elbows and are drawn at full length. */
+.naomiPose {
+  --free-shoulder: 0deg;
+  --free-elbow: -50deg;
+  --free-reach: 1;
+  --deck-shoulder: 0deg;
+  --deck-elbow: -50deg;
+  --deck-reach: 1;
+}
+
+.freeShoulder,
+.deckShoulder,
+.freeElbow,
+.deckElbow,
+.freeMotion,
+.deckMotion,
+.freeReach,
+.deckReach,
+.freeHand,
+.deckHandShift {
+  transform-box: view-box;
+  transform-origin: 0 0;
+}
+
+.freeShoulder,
+.deckShoulder,
+.freeElbow,
+.deckElbow,
+.freeReach,
+.deckReach,
+.freeHand,
+.deckHandShift {
+  transition:
+    rotate 0.35s ease-in-out,
+    scale 0.35s ease-in-out,
+    translate 0.35s ease-in-out;
+}
+
+.freeShoulder {
+  rotate: var(--free-shoulder);
+  animation: sway 4.2s ease-in-out infinite;
+}
+
+.deckShoulder {
+  rotate: var(--deck-shoulder);
+}
+
+.freeElbow {
+  rotate: var(--free-elbow);
+}
+
+.deckElbow {
+  rotate: var(--deck-elbow);
+}
+
+.freeReach {
+  scale: 1 var(--free-reach);
+}
+
+.deckReach {
+  scale: 1 var(--deck-reach);
+}
+
+.freeHand {
+  translate: 0 calc((var(--free-reach) - 1) * var(--fore-length) * 1px);
+}
+
+.deckHandShift {
+  translate: 0 calc((var(--deck-reach) - 1) * var(--fore-length) * 1px);
+}
+
+.deckMotion {
+  animation: holdDeck 4.2s ease-in-out infinite;
+}
+
+.shuffleDeck {
+  opacity: 0;
+}
+
+.character,
+.head,
+.riffleLeft,
+.riffleRight {
+  transform-box: fill-box;
+}
+
+.character {
+  transform-origin: 50% 100%;
+  animation: breathe 4.2s ease-in-out infinite;
+}
+
+.head {
+  transform-origin: 50% 100%;
+  animation: drift 6s ease-in-out infinite;
+}
+
+.eyesOpen {
+  animation: eyesOpen 5.2s infinite;
+}
+
+.eyesClosed {
+  opacity: 0;
+  animation: eyesClosed 5.2s infinite;
+}
+
+/* Shuffle: both hands meet in front of her and riffle the deck. */
+.ninaPose.shuffling {
+  --free-elbow: -58deg;
+  --deck-elbow: -58deg;
+}
+
+.naomiPose.shuffling {
+  --free-elbow: -62deg;
+  --deck-elbow: -62deg;
+}
+
+.shuffling .freeShoulder {
+  animation: none;
+}
+
+.shuffling .freeMotion,
+.shuffling .deckMotion {
+  animation: riffleArm 0.55s ease-in-out infinite alternate;
+}
+
+.shuffling .shuffleDeck {
+  opacity: 1;
+}
+
+.shuffling .fan {
+  opacity: 0;
+}
+
+.shuffling .riffleLeft {
+  transform-origin: 100% 100%;
+  animation: riffleLeft 0.55s ease-in-out infinite alternate;
+}
+
+.shuffling .riffleRight {
+  transform-origin: 0% 100%;
+  animation: riffleRight 0.55s ease-in-out infinite alternate;
+}
+
+/* Deal: one flick of the deck hand toward the table per card; her head follows. */
+.dealing .deckMotion {
+  animation: flick 0.56s ease-in-out var(--throws, 1);
+}
+
+.dealing .head {
+  animation: follow 0.56s ease-in-out var(--throws, 1);
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-1px) scale(1.006);
+  }
+}
+
+@keyframes drift {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(1.2deg);
+  }
+}
+
+@keyframes sway {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(1.5deg);
+  }
+}
+
+@keyframes holdDeck {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-2deg);
+  }
+}
+
+@keyframes riffleArm {
+  from {
+    transform: rotate(3deg);
+  }
+  to {
+    transform: rotate(-3deg);
+  }
+}
+
+@keyframes riffleLeft {
+  from {
+    transform: rotate(-18deg);
+  }
+  to {
+    transform: rotate(-3deg);
+  }
+}
+
+@keyframes riffleRight {
+  from {
+    transform: rotate(18deg);
+  }
+  to {
+    transform: rotate(3deg);
+  }
+}
+
+@keyframes flick {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  45% {
+    transform: rotate(-18deg);
+  }
+}
+
+@keyframes follow {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  45% {
+    transform: rotate(-3deg);
+  }
+}
+
+@keyframes eyesOpen {
+  0%,
+  91%,
+  96%,
+  100% {
+    opacity: 1;
+  }
+  93%,
+  95% {
+    opacity: 0;
+  }
+}
+
+@keyframes eyesClosed {
+  0%,
+  91%,
+  96%,
+  100% {
+    opacity: 0;
+  }
+  93%,
+  95% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .freeShoulder,
+  .deckShoulder,
+  .freeElbow,
+  .deckElbow {
+    transition: none;
+  }
+
+  .character,
+  .head,
+  .eyesOpen,
+  .eyesClosed,
+  .freeShoulder,
+  .deckMotion,
+  .shuffling .freeMotion,
+  .shuffling .deckMotion,
+  .shuffling .riffleLeft,
+  .shuffling .riffleRight,
+  .dealing .deckMotion,
+  .dealing .head {
+    animation: none;
+  }
+}

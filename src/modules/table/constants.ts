@@ -35,3 +35,13 @@ export const NOTICE_MS = 3000;
 
 /** Press this long on your cards to "hold to show" instead of a tap-peek. */
 export const HOLD_MS = 300;
+
+export type DealerId = "naomi" | "nina";
+
+/** Naomi deals unless this device has chosen someone else. */
+export const DEFAULT_DEALER: DealerId = "naomi";
+
+export const DEALER_CHOICES: { id: DealerId; name: string; look: string }[] = [
+  { id: "naomi", name: "Naomi", look: "Navy waistcoat, hair in a bun" },
+  { id: "nina", name: "Nina", look: "Evening dress, long hair" },
+];
